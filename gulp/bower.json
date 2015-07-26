@@ -1,24 +1,24 @@
 {
-  "name": "fff-bower",
-  "version": "0.0.1",
-  "authors": [
-    "Dan Powell <me@dan-powell.uk>"
-  ],
-  "description": "A ready-to-use Bower setup to complement FFF",
-  "homepage": "https://github.com/dan-powell/fff",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "bootstrap": "~3.2.0",
-    "modernizr": "~2.8.3",
-    "respondJS": "~1.4.2",
-    "jquery-legacy": "jquery#^1",
-    "jquery": "~2.1.1",
-    "fontawesome": "~4.2.0"
-  }
+	"name": "fff-bower",
+	"version": "0.0.1",
+	"authors": [
+		"Dan Powell <me@dan-powell.uk>"
+	],
+	"description": "A ready-to-use Bower setup to complement FFF",
+	"homepage": "https://github.com/dan-powell/fff",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"dependencies": {
+		"bootstrap": "~3.2.0",
+		"modernizr": "~2.8.3",
+		"respondJS": "~1.4.2",
+		"jquery-legacy": "jquery#^1",
+		"jquery": "~2.1.1",
+		"fontawesome": "~4.2.0"
+	}
 }

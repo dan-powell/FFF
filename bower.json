@@ -1,0 +1,26 @@
+{
+	"name": "fff",
+	"version": "0.0.1",
+	"description": "A ready-to-use set of tools and scaffolding for front-end development",
+	"authors": [
+		"Dan Powell <me@dan-powell.uk>"
+	],
+	"homepage": "https://github.com/dan-powell/fff",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/dan-powell/fff.git"
+	}
+	"keywords": [
+		"scaffolding",
+		"framework",
+		"frontend"
+	],
+	"license": "MIT",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	]
+}
