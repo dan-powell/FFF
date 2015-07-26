@@ -9,7 +9,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/dan-powell/fff.git"
-	}
+	},
 	"keywords": [
 		"scaffolding",
 		"framework",
