@@ -1,0 +1,16 @@
+{
+	"developmentMode" : true,
+	"js": {
+		"minify": true,
+		"sourceMaps": false
+	},
+	"css": {
+		"minify": true,
+		"sourceMaps": false
+	},
+	"browsersync" : {
+		"title" : "FFF",
+		"proxy" : "localhost",
+		"browser": "google chrome"
+	}
+}
