@@ -170,11 +170,16 @@ gulp.task('debug', function() {
 				if (typeof task.src != undefined) {
 
 					task.src.forEach(function(file) {
-						fs.stat(file, function(err, stat) {
-						    if(err != null) {
-							    console.log('WARNING: ' + file + ' not found! (Task: ' + task.name + ')');
-						    }
-					    });
+
+    					if(file.indexOf("*") == -1) {
+    						fs.stat(file, function(err, stat) {
+    						    if(err != null) {
+    							    console.log('DANGER: ' + file + ' not found! (Task: ' + task.name + ')');
+    						    }
+    					    });
+					    } else {
+    					    console.log('WARNING: ' + file + ' is a glob and cannot be checked... (Task: ' + task.name + ')');
+					    }
 					});
 				}
 			});
