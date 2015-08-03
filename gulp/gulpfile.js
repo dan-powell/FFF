@@ -64,8 +64,8 @@ if (config.developmentMode) {
 // Browser Sync
 gulp.task('browser-sync', function() {
 	browserSync({
-    proxy: config.browsersync.proxy,
-    browser: config.browsersync.browser
+    	proxy: config.browsersync.proxy,
+		browser: config.browsersync.browser
 	});
 });
 
@@ -79,16 +79,16 @@ gulp.task('less', function() {
 		// Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
 
-		  gulp.src(task.src)
-		  	.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
-		  	.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
-		  	.pipe(less())
-				.pipe(gulpif(config.css.minify, minifycss() ))
-				.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
-		    .pipe(gulp.dest(task.dest))
-		    .pipe(gulpif(config.developmentMode, filter('**/*.css') ))
-		    .pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-		    .pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+		gulp.src(task.src)
+			.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
+			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
+			.pipe(less())
+			.pipe(gulpif(config.css.minify, minifycss() ))
+			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
+			.pipe(gulp.dest(task.dest))
+			.pipe(gulpif(config.developmentMode, filter('**/*.css') ))
+			.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
+			.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
 
 	  });
 	} else {
@@ -113,8 +113,8 @@ gulp.task('js-all', function() {
 				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
 				.pipe(uglify({
-				compress: config.js.minify,
-				mangle: false
+					compress: config.js.minify,
+					mangle: false
 				}))
 				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.destFolder))
@@ -166,23 +166,25 @@ gulp.task('debug', function() {
 		if (assets.tasks.hasOwnProperty(key)) {
 			var taskGroup = assets.tasks[key];
 
-			taskGroup.forEach(function(task) {
-				if (typeof task.src != undefined) {
+			if (taskGroup.constructor === Array) {
+				taskGroup.forEach(function(task) {
+					if (typeof task.src != undefined) {
 
-					task.src.forEach(function(file) {
+						task.src.forEach(function(file) {
 
-    					if(file.indexOf("*") == -1) {
-    						fs.stat(file, function(err, stat) {
-    						    if(err != null) {
-    							    console.log('DANGER: ' + file + ' not found! (Task: ' + task.name + ')');
-    						    }
-    					    });
-					    } else {
-    					    console.log('WARNING: ' + file + ' is a glob and cannot be checked... (Task: ' + task.name + ')');
-					    }
-					});
-				}
-			});
+	    					if(file.indexOf("*") == -1) {
+	    						fs.stat(file, function(err, stat) {
+	    						    if(err != null) {
+	    							    console.log('DANGER: ' + file + ' not found! (Task: ' + task.name + ')');
+	    						    }
+	    					    });
+						    } else {
+	    					    console.log('WARNING: ' + file + ' is a glob and cannot be checked... (Task: ' + task.name + ')');
+						    }
+						});
+					}
+				});
+			}
 		}
 	}
 
