@@ -75,7 +75,7 @@ gulp.task('browser-sync', function() {
 
 gulp.task('less', function() {
 
-	if(assets.tasks.less.length > 0) {
+	if(typeof assets.tasks.less != 'undefined' && assets.tasks.less.length > 0) {
 		// Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
 
@@ -103,24 +103,24 @@ gulp.task('less', function() {
 
 gulp.task('js-all', function() {
 
-	if(assets.tasks.js.length > 0) {
+	if(typeof assets.tasks.js != 'undefined' && assets.tasks.js.length > 0) {
 
 		// Loop over all the tasks and run 'em
 		assets.tasks.js.forEach(function(task) {
 
-		  gulp.src(task.src)
-			  .pipe(concat(task.dest))
-		  	.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
-		  	.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
-		  	.pipe(uglify({
-		      compress: config.js.minify,
-		      mangle: false
-		    }))
+			gulp.src(task.src)
+				.pipe(concat(task.dest))
+				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
+				.pipe(uglify({
+				compress: config.js.minify,
+				mangle: false
+				}))
 				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.write('.')) ))
-		    .pipe(gulp.dest(task.destFolder))
-		    .pipe(gulpif(config.developmentMode, filter('**/*.js') ))
-		    .pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-		    .pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+				.pipe(gulp.dest(task.destFolder))
+				.pipe(gulpif(config.developmentMode, filter('**/*.js') ))
+				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
+				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
 
 		});
 	} else {
@@ -134,13 +134,13 @@ gulp.task('js-all', function() {
 
 gulp.task('copy-all', function() {
 
-	if(assets.tasks.less.length > 0) {
+	if(typeof assets.tasks.copy != 'undefined' && assets.tasks.copy.length > 0) {
 		// Loop over all the tasks and run 'em
 		assets.tasks.copy.forEach(function(task) {
 
-		  gulp.src(task.src)
-		    .pipe(gulp.dest(task.dest))
-		    .pipe(gulpif(config.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
+			gulp.src(task.src)
+				.pipe(gulp.dest(task.dest))
+				.pipe(gulpif(config.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
 
 		});
 	} else {
