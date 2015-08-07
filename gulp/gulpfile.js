@@ -4,7 +4,7 @@ try {
 } catch(err) {
 	if (err.code == 'MODULE_NOT_FOUND') {
 		console.log('Gulp config file missing (gulpconfig.json). Defaulting to values in example file.');
-		var config = require('./gulpconfig.example.json');
+		var config = require('./gulpconfig.default.json');
 	} else {
 		console.log('There is an error in the CONFIG file. Please fix it :)');
 		console.log(err);
@@ -19,7 +19,7 @@ try {
 } catch(err) {
 	if (err.code == 'MODULE_NOT_FOUND') {
 		console.log('Asset config file missing (gulpassets.json). Defaulting to values in example file.');
-		var assets = require('./gulpassets.example.json');
+		var assets = require('./gulpassets.default.json');
 	} else {
 		console.log('There is an error in the ASSETS file. Please fix it :)');
 		console.log(err);
