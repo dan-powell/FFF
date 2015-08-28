@@ -1,10 +1,14 @@
+var jsyaml	= require('js-yaml'),
+    fs = require('fs');
+
+
 // Load environment config
 try {
-    var config = require('./gulpconfig.json');
+    var config = jsyaml.load(fs.readFileSync('./gulpconfig.yaml', 'utf8'));
 } catch(err) {
-	if (err.code == 'MODULE_NOT_FOUND') {
-		console.log('Gulp config file missing (gulpconfig.json). Defaulting to values in example file.');
-		var config = require('./gulpconfig.default.json');
+	if (err.code == 'ENOENT') {
+		console.log('Gulp config file missing (gulpconfig.yaml). Defaulting to values in example file.');
+		var config = jsyaml.load(fs.readFileSync('./gulpconfig.default.yaml', 'utf8'));
 	} else {
 		console.log('There is an error in the CONFIG file. Please fix it :)');
 		console.log(err);
@@ -15,18 +19,17 @@ try {
 
 // Load assets config
 try {
-    var assets = require('./gulpassets.json');
+    var assets = jsyaml.load(fs.readFileSync('./gulpassets.yaml', 'utf8'));
 } catch(err) {
-	if (err.code == 'MODULE_NOT_FOUND') {
-		console.log('Asset config file missing (gulpassets.json). Defaulting to values in example file.');
-		var assets = require('./gulpassets.default.json');
+    if (err.code == 'ENOENT') {
+		console.log('Gulp assets file missing (gulpassets.yaml). Defaulting to values in example file.');
+		var assets = jsyaml.load(fs.readFileSync('./gulpassets.default.yaml', 'utf8'));
 	} else {
-		console.log('There is an error in the ASSETS file. Please fix it :)');
-		console.log(err);
-		process.exit()
+    	console.log('There is an error in the ASSETS file. Please fix it :)');
+    	console.log(err);
+    	process.exit()
 	}
 }
-
 
 
 // Load plugins

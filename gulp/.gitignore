@@ -1,7 +1,10 @@
 /public_html
 
+gulpconfig.json
 gulpassets.json
-gulpassets.json
+
+gulpconfig.yaml
+gulpassets.yaml
 
 /node_modules
 /bower_components

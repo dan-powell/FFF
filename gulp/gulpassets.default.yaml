@@ -1,0 +1,54 @@
+tasks: 
+    less: 
+        - 
+            name: "Main CSS"
+            src: 
+                - "../less/main.less"
+            dest: "./public_html/css"
+    js: 
+        - 
+            name: "Main JS"
+            src: 
+                - "assets/js/helpers.js"
+                - "assets/js/main.js"
+            destFolder: "./public_html/js"
+            dest: "main.js"
+            
+        - 
+            name: "JS Plugins"
+            src: 
+                - "./bower_components/jquery/dist/jquery.min.js"
+                - "./bower_components/bootstrap/dist/js/bootstrap.js"
+            destFolder: "./public_html/js"
+            dest: "plugins.js"
+    copy: 
+        - 
+            name: "JS Vendor Plugins"
+            src: 
+                - "bower_components/modernizr/modernizr.js"
+                - "bower_components/respond/dest/respond.min.js"
+            dest: "./public_html/js/vendor"
+            
+        - 
+            name: "Fonts"
+            src: 
+                - "bower_components/bootstrap/fonts/**"
+                - "bower_components/fontawesome/fonts/**"
+            dest: "./public_html/fonts"
+watch: 
+    - 
+        files: 
+            - "./assets/less/**/*.less"
+        tasks: 
+            - "css"
+            
+    - 
+        files: 
+            - "./assets/js/**/*.js"
+        tasks: 
+            - "js"
+    - 
+        files: 
+            - "./smarty/templates/**/*.tpl"
+        tasks: 
+            - "reload"
