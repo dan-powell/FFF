@@ -5,7 +5,7 @@ tasks:
             src: 
                 - "../less/main.less"
             dest: "./public_html/css"
-    js: 
+    js_main: 
         - 
             name: "Main JS"
             src: 
@@ -13,7 +13,8 @@ tasks:
                 - "assets/js/main.js"
             destFolder: "./public_html/js"
             dest: "main.js"
-            
+    
+    js_plugins: 
         - 
             name: "JS Plugins"
             src: 
@@ -46,7 +47,7 @@ watch:
         files: 
             - "./assets/js/**/*.js"
         tasks: 
-            - "js"
+            - "js-main"
     - 
         files: 
             - "./smarty/templates/**/*.tpl"
