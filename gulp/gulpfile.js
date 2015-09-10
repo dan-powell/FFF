@@ -77,7 +77,7 @@ gulp.task('browser-sync', function() {
 	----------------------------------------- */
 
 gulp.task('less', function() {
-
+    
 	if(typeof assets.tasks.less != 'undefined' && assets.tasks.less.length > 0) {
 		// Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
@@ -86,7 +86,7 @@ gulp.task('less', function() {
 			.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
 			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
 			.pipe(less())
-			.pipe(gulpif(config.css.minify, minifycss() ))
+			.pipe(gulpif(config.css.minify, minifycss(config.css.minifyOptions) ))
 			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
 			.pipe(gulp.dest(task.dest))
 			.pipe(gulpif(config.developmentMode, filter('**/*.css') ))

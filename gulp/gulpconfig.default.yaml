@@ -5,6 +5,9 @@ js:
 css:
     minify: true
     sourceMaps: false
+    minifyOptions:
+        #Enable compatability mode due to this 'feature' https://github.com/jakubpawlowicz/clean-css/issues/654
+        compatibility: "ie7, -units.ch, -units.in -units.pc -units.pt -units.rem -units.vh -units.vm -units.vmax -units.vmin"
 browsersync:
     title: "FFF"
     proxy: "localhost"
