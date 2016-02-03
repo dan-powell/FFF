@@ -1,5 +1,5 @@
-var jsyaml	= require('js-yaml'),
-    fs = require('fs');
+var jsyaml = require('js-yaml'),
+	fs = require('fs');
 
 
 // Load environment config
@@ -21,14 +21,9 @@ try {
 try {
     var assets = jsyaml.load(fs.readFileSync('./gulpassets.yaml', 'utf8'));
 } catch(err) {
-    if (err.code == 'ENOENT') {
-		console.log('Gulp assets file missing (gulpassets.yaml). Defaulting to values in example file.');
-		var assets = jsyaml.load(fs.readFileSync('./gulpassets.default.yaml', 'utf8'));
-	} else {
-    	console.log('There is an error in the ASSETS file. Please fix it :)');
-    	console.log(err);
-    	process.exit()
-	}
+	console.log('There is an error in the ASSETS file. Please fix it.');
+	console.log(err);
+	process.exit()
 }
 
 
@@ -48,7 +43,7 @@ if (config.developmentMode) {
 		notify      	= require('gulp-notify'),
 		browserSync 	= require('browser-sync')
 } else {
-	// TODO - This is a hacky way of dealing with missing dependancies
+	// TODO - This is a hacky way of dealing with missing dev dependancies
 	var notify = function() {return true};
 	notify.onError = function() {return true};
 	var sourcemaps = {
@@ -66,10 +61,7 @@ if (config.developmentMode) {
 
 // Browser Sync
 gulp.task('browser-sync', function() {
-	browserSync({
-    	proxy: config.browsersync.proxy,
-		browser: config.browsersync.browser
-	});
+	browserSync(config.browsersync);
 });
 
 
@@ -77,21 +69,21 @@ gulp.task('browser-sync', function() {
 	----------------------------------------- */
 
 gulp.task('less', function() {
-    
+
 	if(typeof assets.tasks.less != 'undefined' && assets.tasks.less.length > 0) {
 		// Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
 
-		gulp.src(task.src)
-			.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
-			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
-			.pipe(less())
-			.pipe(gulpif(config.css.minify, minifycss(config.css.minifyOptions) ))
-			.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
-			.pipe(gulp.dest(task.dest))
-			.pipe(gulpif(config.developmentMode, filter('**/*.css') ))
-			.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-			.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+		  	gulp.src(task.src)
+				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
+				.pipe(less())
+				.pipe(gulpif(config.css.minify, minifycss(config.css.minifyOptions) ))
+				.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulp.dest(task.dest))
+				.pipe(gulpif(config.developmentMode, filter('**/*.css') ))
+				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
+				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
 
 	  });
 	} else {
@@ -104,7 +96,7 @@ gulp.task('less', function() {
 /* 	JS Tasks
 	----------------------------------------- */
 
-gulp.task('js-main', function() {
+gulp.task('js-all', function() {
 
 	if(typeof assets.tasks.js_main != 'undefined' && assets.tasks.js_main.length > 0) {
 
@@ -113,7 +105,7 @@ gulp.task('js-main', function() {
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
-				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
 				.pipe(uglify({
 					compress: config.js.minify,
@@ -124,7 +116,6 @@ gulp.task('js-main', function() {
 				.pipe(gulpif(config.developmentMode, filter('**/*.js') ))
 				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
 				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
-
 		});
 	} else {
 		console.log('No JS tasks defined. Please add some to assetconfig.json');
@@ -132,9 +123,6 @@ gulp.task('js-main', function() {
 });
 
 
-
-/* 	JS Tasks
-	----------------------------------------- */
 
 gulp.task('js-plugins', function() {
 
@@ -145,7 +133,7 @@ gulp.task('js-plugins', function() {
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
-				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
 				.pipe(uglify({
 					compress: config.js.minify,
@@ -159,7 +147,7 @@ gulp.task('js-plugins', function() {
 
 		});
 	} else {
-		console.log('No Plugin JS tasks defined. Please add some to assetconfig.json');
+		console.log('No JS Plugin tasks defined. Please add some to assetconfig.json');
 	}
 });
 
@@ -170,12 +158,13 @@ gulp.task('js-plugins', function() {
 gulp.task('copy-all', function() {
 
 	if(typeof assets.tasks.copy != 'undefined' && assets.tasks.copy.length > 0) {
+
 		// Loop over all the tasks and run 'em
 		assets.tasks.copy.forEach(function(task) {
 
-			gulp.src(task.src)
-				.pipe(gulp.dest(task.dest))
-				.pipe(gulpif(config.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
+		  	gulp.src(task.src)
+		    	.pipe(gulp.dest(task.dest))
+		    	.pipe(gulpif(config.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
 
 		});
 	} else {

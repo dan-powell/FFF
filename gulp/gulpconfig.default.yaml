@@ -6,9 +6,14 @@ css:
     minify: true
     sourceMaps: false
     minifyOptions:
-        #Enable compatability mode due to this 'feature' https://github.com/jakubpawlowicz/clean-css/issues/654
-        compatibility: "ie7, -units.ch, -units.in -units.pc -units.pt -units.rem -units.vh -units.vm -units.vmax -units.vmin"
+        # Uncomment the below options if minifying the CSS breaks shit
+        #compatibility: "ie7, -units.ch, -units.in -units.pc -units.pt -units.rem -units.vh -units.vm -units.vmax -units.vmin"
+        #advanced: false
+        #aggressiveMerging: false
+        #restructuring: false
+        #keepSpecialComments: 0
 browsersync:
-    title: "FFF"
+    title: "Project Name"
     proxy: "localhost"
+    open: false
     browser: "google chrome"
