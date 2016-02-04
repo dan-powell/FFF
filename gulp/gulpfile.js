@@ -34,7 +34,8 @@ var gulp		= require('gulp'),
 	minifycss   = require('gulp-minify-css'),
 	uglify      = require('gulp-uglify'),
 	concat      = require('gulp-concat'),
-	gulpif 		= require('gulp-if');
+	gulpif 		= require('gulp-if'),
+    reveasy     = require("gulp-rev-easy");
 
 // Load local development plugins
 if (config.developmentMode) {
@@ -96,7 +97,7 @@ gulp.task('less', function() {
 /* 	JS Tasks
 	----------------------------------------- */
 
-gulp.task('js-all', function() {
+gulp.task('js-main', function() {
 
 	if(typeof assets.tasks.js_main != 'undefined' && assets.tasks.js_main.length > 0) {
 
@@ -223,9 +224,17 @@ gulp.task('debug', function() {
 	----------------------------------------- */
 
 gulp.task('rev', function () {
-  console.log('Cachebusting. TODO: Does nothing at the moment, need to implement this.');
-});
 
+    if(typeof assets.tasks.rev != 'undefined' && assets.tasks.rev.length > 0) {
+        assets.tasks.rev.forEach(function(task) {
+            gulp.src(task.src)
+                .pipe(reveasy({revType: 'date'}))
+                .pipe(gulp.dest(task.dest))
+                .pipe(gulpif(config.developmentMode, notify({message: 'Successfully revved ' + task.name})));
+        });
+    }
+
+});
 
 
 /* Task Groupings
