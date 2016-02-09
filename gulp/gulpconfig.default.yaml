@@ -12,8 +12,13 @@ css:
         #aggressiveMerging: false
         #restructuring: false
         #keepSpecialComments: 0
+cachebusting:
+    revEasyOptions:
+        revType: 'date'        
 browsersync:
     title: "Project Name"
     proxy: "localhost"
     open: false
     browser: "google chrome"
+    reloadDebounce: 3000
+    reloadOnRestart: true

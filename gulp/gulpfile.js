@@ -228,7 +228,7 @@ gulp.task('rev', function () {
     if(typeof assets.tasks.rev != 'undefined' && assets.tasks.rev.length > 0) {
         assets.tasks.rev.forEach(function(task) {
             gulp.src(task.src)
-                .pipe(reveasy({revType: 'date'}))
+                .pipe(reveasy(config.cachebusting.revEasyOptions))
                 .pipe(gulp.dest(task.dest))
                 .pipe(gulpif(config.developmentMode, notify({message: 'Successfully revved ' + task.name})));
         });
