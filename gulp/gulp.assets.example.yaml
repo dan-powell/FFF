@@ -1,0 +1,97 @@
+# Gulp Tasks
+# ------------------------
+# Tasks are grouped by usage
+# Each task group contains an array of tasks
+# Each of these tasks must have a name, source and destination
+
+tasks: 
+
+    # Process LESS files
+    less: 
+        - 
+            # Name of the individual task - used for notifications
+            name: "Main CSS"
+            # Source files - Can be a single file or array. Each file will be processed and saved individually.
+            src: 
+                - "../assets/less/main.less"
+            # Destination path - define where the resulting CSS files should be saved
+            dest: "../public/css"
+            # Each task can optionally contain custom options for the plugins used
+            #minifycss:
+                #advanced: false
+     
+    # Concatenate & minify app JS files
+    js_main: 
+        - 
+            name: "Main JS"
+            # Source files - Can be a single file or array. Multiple files will be concatenated.
+            src: 
+                - "../assets/js/helpers.js"
+                - "../assets/js/main.js"
+            # Destination path - define where the resulting JS files should be saved
+            destFolder: "../public/js"
+            # Destination filename - define the filename of the resulting JS file
+            dest: "main.js" 
+            # Each task can optionally contain custom options for the plugins used. If none are used it will default to values in config.yaml.
+            #uglify:
+                #mangle: false
+                #compress: true
+    
+    # Concatenate & minify plugin JS files
+    js_plugins: 
+        - 
+            name: "JS Plugins"
+            src: 
+                - "../bower/bower_components/jquery/dist/jquery.min.js"
+                - "../bower/bower_components/bootstrap/dist/js/bootstrap.js"
+            destFolder: "../public/js"
+            dest: "plugins.js"
+
+    # Copy files from one location to another (Handy for publishing bower components)
+    copy: 
+        - 
+            name: "JS Vendor Plugins"
+            src: 
+                - "../bower/bower_components/modernizr/modernizr.js"
+                - "../bower/bower_components/respond/dest/respond.min.js"
+            dest: "../public/js/vendor"
+            
+        - 
+            name: "Fonts"
+            src: 
+                - "../bower/bower_components/bootstrap/fonts/**"
+                - "../bower/bower_components/fontawesome/fonts/**"
+            dest: "../public/fonts"
+            
+    # Basic cachebusting for static asset URLS
+    cachebust:
+        -   name: "Views"
+            src:
+                - "../assets/views/index.html"
+            dest: "../public/views/"
+
+
+# Gulp watch locations
+# ------------------------
+     
+watch: 
+    - 
+        # LESS files
+        files: 
+            - "../assets/less/**/*.less"
+        tasks: 
+            - "css"
+            
+    - 
+        # JS Files
+        # Note that for speed we don't run the js_plugins task
+        files: 
+            - "../assets/js/**/*.js"
+        tasks: 
+            - "js-main"
+    - 
+        # JS Files
+        files: 
+            - "../assets/views/**/*.html"
+        tasks: 
+            - "reload"

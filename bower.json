@@ -10,6 +10,11 @@
 		"type": "git",
 		"url": "git://github.com/dan-powell/fff.git"
 	},
+	"main": [
+    	'assets/js/main.js',
+    	'assets/less/main.less',
+    	'assets/views/index.html'
+	],
 	"keywords": [
 		"scaffolding",
 		"framework",

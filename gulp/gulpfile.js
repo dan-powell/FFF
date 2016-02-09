@@ -2,30 +2,46 @@ var jsyaml = require('js-yaml'),
 	fs = require('fs');
 
 
-// Load environment config
+// Load environment
 try {
-    var config = jsyaml.load(fs.readFileSync('./gulpconfig.yaml', 'utf8'));
+    var env = jsyaml.load(fs.readFileSync('./gulp.env.yaml', 'utf8'));
 } catch(err) {
 	if (err.code == 'ENOENT') {
-		console.log('Gulp config file missing (gulpconfig.yaml). Defaulting to values in example file.');
-		var config = jsyaml.load(fs.readFileSync('./gulpconfig.default.yaml', 'utf8'));
+		console.log('Gulp environment file missing (gulp.env.yaml). Defaulting to values in example file.');
+		var env = jsyaml.load(fs.readFileSync('./gulp.env.default.yaml', 'utf8'));
 	} else {
-		console.log('There is an error in the CONFIG file. Please fix it :)');
+		console.log('There is an error in the ENV file.');
 		console.log(err);
 		process.exit()
 	}
 }
 
-
-// Load assets config
+// Load assets
 try {
-    var assets = jsyaml.load(fs.readFileSync('./gulpassets.yaml', 'utf8'));
+    var assets = jsyaml.load(fs.readFileSync('./gulp.assets.yaml', 'utf8'));
 } catch(err) {
-	console.log('There is an error in the ASSETS file. Please fix it.');
+    if (err.code == 'ENOENT') {
+		console.log('Gulp assets file missing (gulp.assets.yaml).');
+    } else {
+    	console.log('There is an error in the ASSETS file.');
+    	console.log(err);
+	}
+    process.exit()
+}
+
+// Load plugin config
+try {
+    var config = jsyaml.load(fs.readFileSync('./gulp.config.yaml', 'utf8'));
+} catch(err) {
+	console.log('There is an error in the CONFIG file.');
 	console.log(err);
 	process.exit()
 }
 
+if(assets == null || typeof assets.tasks == 'undefined' || assets.tasks == null) {
+	console.log('No tasks defined. Please add some to the assets file.');
+	process.exit()
+} 
 
 // Load plugins
 var gulp		= require('gulp'),
@@ -38,7 +54,7 @@ var gulp		= require('gulp'),
     reveasy     = require("gulp-rev-easy");
 
 // Load local development plugins
-if (config.developmentMode) {
+if (env.developmentMode) {
 	var sourcemaps 	= require('gulp-sourcemaps'),
 		filter       	= require('gulp-filter'),
 		notify      	= require('gulp-notify'),
@@ -62,7 +78,7 @@ if (config.developmentMode) {
 
 // Browser Sync
 gulp.task('browser-sync', function() {
-	browserSync(config.browsersync);
+	browserSync(env.browsersync);
 });
 
 
@@ -71,24 +87,29 @@ gulp.task('browser-sync', function() {
 
 gulp.task('less', function() {
 
-	if(typeof assets.tasks.less != 'undefined' && assets.tasks.less.length > 0) {
-		// Loop over all the tasks and run 'em
+	if(typeof assets.tasks.less == 'undefined' || assets.tasks.less == null) {
+    	console.log('No Less tasks defined. Please add some to the assets file.');
+	} else {
+        // Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
 
+            // Check if a config is set, use some sensible defaults if not
+    		if(typeof task.minifycss == 'undefined') {
+        		task.minifycss = config.less.minifycss;
+    		}
+
 		  	gulp.src(task.src)
-				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-				.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.init()) ))
+				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
 				.pipe(less())
-				.pipe(gulpif(config.css.minify, minifycss(config.css.minifyOptions) ))
-				.pipe(gulpif(config.developmentMode, gulpif(config.css.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulpif(env.css.minify, minifycss(task.minifycss) ))
+				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.dest))
-				.pipe(gulpif(config.developmentMode, filter('**/*.css') ))
-				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+				.pipe(gulpif(env.developmentMode, filter('**/*.css') ))
+				.pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
+				.pipe(gulpif(env.developmentMode, browserSync.reload({stream:true}) ));
 
 	  });
-	} else {
-		console.log('No Less tasks defined. Please add some to assetconfig.json');
 	}
 
 });
@@ -99,27 +120,31 @@ gulp.task('less', function() {
 
 gulp.task('js-main', function() {
 
-	if(typeof assets.tasks.js_main != 'undefined' && assets.tasks.js_main.length > 0) {
+	if(typeof assets.tasks.js_main == 'undefined' || assets.tasks.js_main == null) {
+		console.log('No JS tasks defined. Please add some to the assets file.');
+	} else {
 
 		// Loop over all the tasks and run 'em
 		assets.tasks.js_main.forEach(function(task) {
+    		
+    		// Check if a config is set, use some sensible defaults if not
+    		if(typeof task.uglify == 'undefined') {
+        		task.uglify = config.js.uglify;
+    		}
+    		
+    		console.log(task.uglify);
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
-				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
-				.pipe(uglify({
-					compress: config.js.minify,
-					mangle: false
-				}))
-				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
+				.pipe(uglify(task.uglify))
+				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.destFolder))
-				.pipe(gulpif(config.developmentMode, filter('**/*.js') ))
-				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
+				.pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
+				.pipe(gulpif(env.developmentMode, browserSync.reload({stream:true}) ));
 		});
-	} else {
-		console.log('No JS tasks defined. Please add some to assetconfig.json');
 	}
 });
 
@@ -127,28 +152,29 @@ gulp.task('js-main', function() {
 
 gulp.task('js-plugins', function() {
 
-	if(typeof assets.tasks.js_plugins != 'undefined' && assets.tasks.js_plugins.length > 0) {
-
+	if(typeof assets.tasks.js_plugins == 'undefined' || assets.tasks.js_plugins == null) {
+        console.log('No JS Plugin tasks defined. Please add some to the assets file');
+    } else {
 		// Loop over all the tasks and run 'em
 		assets.tasks.js_plugins.forEach(function(task) {
+    		
+            // Check if a config is set, use some sensible defaults if not
+    		if(typeof task.uglify == 'undefined') {
+        		task.uglify = config.js.uglify;
+    		}
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
-				.pipe(gulpif(config.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.init()) ))
-				.pipe(uglify({
-					compress: config.js.minify,
-					mangle: false
-				}))
-				.pipe(gulpif(config.developmentMode, gulpif(config.js.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
+				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
+				.pipe(uglify(task.uglify))
+				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.destFolder))
-				.pipe(gulpif(config.developmentMode, filter('**/*.js') ))
-				.pipe(gulpif(config.developmentMode, notify({ message: task.name + ' Successful' }) ))
-				.pipe(gulpif(config.developmentMode, browserSync.reload({stream:true}) ));
+				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
+				.pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
+				.pipe(gulpif(env.developmentMode, browserSync.reload({stream:true}) ));
 
 		});
-	} else {
-		console.log('No JS Plugin tasks defined. Please add some to assetconfig.json');
 	}
 });
 
@@ -158,18 +184,17 @@ gulp.task('js-plugins', function() {
 
 gulp.task('copy-all', function() {
 
-	if(typeof assets.tasks.copy != 'undefined' && assets.tasks.copy.length > 0) {
-
-		// Loop over all the tasks and run 'em
+	if(typeof assets.tasks.js_plugins == 'undefined' || assets.tasks.js_plugins == null) {
+        console.log('No Copy tasks defined. Please add some to assets file');
+	} else {
+        // Loop over all the tasks and run 'em
 		assets.tasks.copy.forEach(function(task) {
 
 		  	gulp.src(task.src)
 		    	.pipe(gulp.dest(task.dest))
-		    	.pipe(gulpif(config.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
+		    	.pipe(gulpif(env.developmentMode, notify({ message: 'Successfully copied ' + task.name }) ));
 
 		});
-	} else {
-		console.log('No Copy tasks defined. Please add some to assetconfig.json');
 	}
 });
 
@@ -212,9 +237,6 @@ gulp.task('debug', function() {
 			}
 		}
 	}
-
-
-
 });
 
 
@@ -225,14 +247,22 @@ gulp.task('debug', function() {
 
 gulp.task('rev', function () {
 
-    if(typeof assets.tasks.rev != 'undefined' && assets.tasks.rev.length > 0) {
-        assets.tasks.rev.forEach(function(task) {
+    if(typeof assets.tasks.js_plugins == 'undefined' || assets.tasks.js_plugins == null) {
+        console.log('No Cachebusting tasks defined. Please add some to assets file');
+    } else {
+        // Loop over all the tasks and run 'em
+        assets.tasks.cachebust.forEach(function(task) {
+            // Check if a config is set, use some sensible defaults if not
+            if(typeof task.revEasy == 'undefined') {
+        		task.revEasy = config.cachebust.revEasy;
+    		}
+            
             gulp.src(task.src)
-                .pipe(reveasy(config.cachebusting.revEasyOptions))
+                .pipe(reveasy(task.revEasy))
                 .pipe(gulp.dest(task.dest))
-                .pipe(gulpif(config.developmentMode, notify({message: 'Successfully revved ' + task.name})));
+                .pipe(gulpif(env.developmentMode, notify({message: 'Successfully revved ' + task.name})));
         });
-    }
+	}
 
 });
 
@@ -249,10 +279,10 @@ gulp.task('default', [], function() {
 gulp.task('build', [], function() {
 
 	// Force minification and disable sitemaps when running build
-	config.js.minify = true;
-	config.js.sourceMaps = false;
-	config.css.minify = true;
-	config.css.sourceMaps = false;
+	env.js.minify = true;
+	env.js.sourceMaps = false;
+	env.css.minify = true;
+	env.css.sourceMaps = false;
 
 	gulp.start('css', 'js', 'copy', 'cachebust');
 });
@@ -290,15 +320,18 @@ gulp.task('reload', [], function () {
 
 // Watch
 gulp.task('watch', ['browser-sync'], function () {
-	if(!config.developmentMode) {
+	if(!env.developmentMode) {
 		console.log('Not in development mode, "watch" task disabled.');
 	} else {
-		if(config.developmentMode && assets.watch.length > 0) {
+    	
+        if(typeof assets.watch == 'undefined' || assets.watch == null) {
+            console.log('No watch tasks defined. Please add some to the assets file.');
+        } else {
+
 			assets.watch.forEach(function(watch) {
-		    gulp.watch(watch.files, watch.tasks);
+		        gulp.watch(watch.files, watch.tasks);
 			});
-		} else {
-			console.log('No watch tasks defined. Please add some to assetconfig.json');
+
 		}
 	}
 });

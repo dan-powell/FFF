@@ -1,0 +1,16 @@
+# Default plugin configs - Avoid touching unless you have to
+less:
+    minifycss:
+        # Uncomment the below options if minifying the CSS breaks shit
+        #compatibility: "ie7, -units.ch, -units.in -units.pc -units.pt -units.rem -units.vh -units.vm -units.vmax -units.vmin"
+        #advanced: false
+        #aggressiveMerging: false
+        #restructuring: false
+        #keepSpecialComments: 0
+js:
+    uglify:
+        mangle: false
+        compress: true
+cachebust:
+    revEasy:
+        revType: 'date'

@@ -1,6 +1,7 @@
 /public_html
 
-gulpconfig.yaml
+gulp.env.yaml
+gulp.assets.yaml
 
 /node_modules
 /bower_components
