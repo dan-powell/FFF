@@ -272,7 +272,11 @@ gulp.task('rev', function () {
 
 // Default
 gulp.task('default', [], function() {
-  gulp.start('watch');
+    if(env.developmentMode) {
+        gulp.start('watch');
+    } else {
+        gulp.start('build');
+    }
 });
 
 // Kitchen sink - should be used to compile for production
