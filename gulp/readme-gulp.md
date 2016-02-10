@@ -77,3 +77,9 @@ Processes JS files
 ### gulp cachebust
 
 Revises static asset URLS in HTML files.
+
+## Now with Post-CSS!
+
+Gulp now uses Post-CSS to process CSS *after* it has been processed by LESS. Post-CSS plugins are declared as an array in `gulp.config.yaml`, (see the file for an example). Each plugin can also be given options. Post-CSS plugins can also be individually set for each task, (see `gulp.assets.example.yaml` for an example.). 
+
+*NOTE: Remember to install the plugin via NPM before using it!*

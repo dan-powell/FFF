@@ -41,17 +41,39 @@ try {
 if(assets == null || typeof assets.tasks == 'undefined' || assets.tasks == null) {
 	console.log('No tasks defined. Please add some to the assets file.');
 	process.exit()
-} 
+}
 
 // Load plugins
 var gulp		= require('gulp'),
 	plumber 	= require('gulp-plumber'),
 	less        = require('gulp-less'),
-	minifycss   = require('gulp-minify-css'),
 	uglify      = require('gulp-uglify'),
 	concat      = require('gulp-concat'),
 	gulpif 		= require('gulp-if'),
-    reveasy     = require("gulp-rev-easy");
+    reveasy     = require("gulp-rev-easy"),
+    postcss     = require('gulp-postcss');
+
+
+// Get get post CSS plugins
+var getPostCssPlugins = function(plugins) {
+    var array = [];
+    plugins.forEach(function (plugin) {
+        var pluginHolder = require(plugin.name);
+        if(typeof plugin.options != 'undefined' && plugin.options != null) {
+            array.push(pluginHolder(plugin.options));
+        } else {
+            array.push(pluginHolder);
+        }
+    });
+    return array;
+};
+
+// Load Post-CSS Plugins
+if(typeof config.postCssPlugins != 'undefined' && config.postCssPlugins != null) {
+    var postCssPlugins = getPostCssPlugins(config.postCssPlugins);
+} else {
+    var postCssPlugins = [];
+}
 
 // Load local development plugins
 if (env.developmentMode) {
@@ -90,19 +112,22 @@ gulp.task('less', function() {
 	if(typeof assets.tasks.less == 'undefined' || assets.tasks.less == null) {
     	console.log('No Less tasks defined. Please add some to the assets file.');
 	} else {
+
         // Loop over all the tasks and run 'em
 		assets.tasks.less.forEach(function(task) {
 
             // Check if a config is set, use some sensible defaults if not
-    		if(typeof task.minifycss == 'undefined') {
-        		task.minifycss = config.less.minifycss;
-    		}
+            if(typeof task.postCssPlugins != 'undefined' && task.postCssPlugins != null) {
+                task.postCssPlugins = getPostCssPlugins(task.postCssPlugins);
+            } else {
+                task.postCssPlugins = postCssPlugins;
+            }
 
 		  	gulp.src(task.src)
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
 				.pipe(less())
-				.pipe(gulpif(env.css.minify, minifycss(task.minifycss) ))
+                .pipe(postcss(task.postCssPlugins))
 				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.dest))
 				.pipe(gulpif(env.developmentMode, filter('**/*.css') ))
@@ -126,13 +151,11 @@ gulp.task('js-main', function() {
 
 		// Loop over all the tasks and run 'em
 		assets.tasks.js_main.forEach(function(task) {
-    		
+
     		// Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		task.uglify = config.js.uglify;
+        		task.uglify = config.uglify;
     		}
-    		
-    		console.log(task.uglify);
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
@@ -157,10 +180,10 @@ gulp.task('js-plugins', function() {
     } else {
 		// Loop over all the tasks and run 'em
 		assets.tasks.js_plugins.forEach(function(task) {
-    		
+
             // Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		task.uglify = config.js.uglify;
+        		task.uglify = config.uglify;
     		}
 
 			gulp.src(task.src)
@@ -254,9 +277,9 @@ gulp.task('rev', function () {
         assets.tasks.cachebust.forEach(function(task) {
             // Check if a config is set, use some sensible defaults if not
             if(typeof task.revEasy == 'undefined') {
-        		task.revEasy = config.cachebust.revEasy;
+        		task.revEasy = config.revEasy;
     		}
-            
+
             gulp.src(task.src)
                 .pipe(reveasy(task.revEasy))
                 .pipe(gulp.dest(task.dest))
@@ -327,7 +350,7 @@ gulp.task('watch', ['browser-sync'], function () {
 	if(!env.developmentMode) {
 		console.log('Not in development mode, "watch" task disabled.');
 	} else {
-    	
+
         if(typeof assets.watch == 'undefined' || assets.watch == null) {
             console.log('No watch tasks defined. Please add some to the assets file.');
         } else {
