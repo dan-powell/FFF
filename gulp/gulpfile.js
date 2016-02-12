@@ -118,16 +118,16 @@ gulp.task('less', function() {
 
             // Check if a config is set, use some sensible defaults if not
             if(typeof task.postCssPlugins != 'undefined' && task.postCssPlugins != null) {
-                task.postCssPlugins = getPostCssPlugins(task.postCssPlugins);
+                var postCssPluginsTask = getPostCssPlugins(task.postCssPlugins);
             } else {
-                task.postCssPlugins = postCssPlugins;
+                var postCssPluginsTask = postCssPlugins;
             }
 
 		  	gulp.src(task.src)
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
 				.pipe(less())
-                .pipe(postcss(task.postCssPlugins))
+                .pipe(postcss(postCssPluginsTask))
 				.pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.dest))
 				.pipe(gulpif(env.developmentMode, filter('**/*.css') ))
@@ -154,14 +154,16 @@ gulp.task('js-main', function() {
 
     		// Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		task.uglify = config.uglify;
-    		}
+        		var uglifyConfig = config.uglify;
+    		} else {
+                var uglifyConfig = task.uglify;
+            }
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
-				.pipe(uglify(task.uglify))
+				.pipe(uglify(uglifyConfig))
 				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.destFolder))
 				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
@@ -181,16 +183,18 @@ gulp.task('js-plugins', function() {
 		// Loop over all the tasks and run 'em
 		assets.tasks.js_plugins.forEach(function(task) {
 
-            // Check if a config is set, use some sensible defaults if not
+    		// Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		task.uglify = config.uglify;
-    		}
+        		var uglifyConfig = config.uglify;
+    		} else {
+                var uglifyConfig = task.uglify;
+            }
 
 			gulp.src(task.src)
 				.pipe(concat(task.dest))
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
 				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
-				.pipe(uglify(task.uglify))
+				.pipe(uglify(uglifyConfig))
 				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
 				.pipe(gulp.dest(task.destFolder))
 				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
