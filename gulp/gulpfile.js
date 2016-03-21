@@ -274,7 +274,7 @@ gulp.task('debug', function() {
 
 gulp.task('rev', function () {
 
-    if(typeof assets.tasks.js_plugins == 'undefined' || assets.tasks.js_plugins == null) {
+    if(typeof assets.tasks.cachebust == 'undefined' || assets.tasks.cachebust == null) {
         console.log('No Cachebusting tasks defined. Please add some to assets file');
     } else {
         // Loop over all the tasks and run 'em
