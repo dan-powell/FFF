@@ -107,14 +107,14 @@ gulp.task('browser-sync', function() {
 /* 	LESS Tasks
 	----------------------------------------- */
 
-gulp.task('less', function() {
+gulp.task('less-main', function() {
 
-	if(typeof assets.tasks.less == 'undefined' || assets.tasks.less == null) {
+	if(typeof assets.tasks.less_main == 'undefined' || assets.tasks.less_main == null) {
     	console.log('No Less tasks defined. Please add some to the assets file.');
 	} else {
 
         // Loop over all the tasks and run 'em
-		assets.tasks.less.forEach(function(task) {
+		assets.tasks.less_main.forEach(function(task) {
 
             // Check if a config is set, use some sensible defaults if not
             if(typeof task.postCssPlugins != 'undefined' && task.postCssPlugins != null) {
@@ -138,6 +138,40 @@ gulp.task('less', function() {
 	}
 
 });
+
+
+gulp.task('less-plugins', function() {
+
+    if(typeof assets.tasks.less_plugins == 'undefined' || assets.tasks.less_plugins == null) {
+        console.log('No Less tasks defined. Please add some to the assets file.');
+    } else {
+
+        // Loop over all the tasks and run 'em
+        assets.tasks.less_plugins.forEach(function(task) {
+
+            // Check if a config is set, use some sensible defaults if not
+            if(typeof task.postCssPlugins != 'undefined' && task.postCssPlugins != null) {
+                var postCssPluginsTask = getPostCssPlugins(task.postCssPlugins);
+            } else {
+                var postCssPluginsTask = postCssPlugins;
+            }
+
+            gulp.src(task.src)
+                .pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
+                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
+                .pipe(less())
+                .pipe(postcss(postCssPluginsTask))
+                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
+                .pipe(gulp.dest(task.dest))
+                .pipe(gulpif(env.developmentMode, filter('**/*.css') ))
+                .pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
+                .pipe(gulpif(env.developmentMode, browserSync.reload({stream:true}) ));
+
+        });
+    }
+
+});
+
 
 
 /* 	JS Tasks
@@ -320,7 +354,7 @@ gulp.task('build', [], function() {
 
 // Task aliases - should always exist, but can be customised
 gulp.task('css', [], function() {
-  gulp.start('less');
+  gulp.start('less-main', 'less-plugins');
 });
 
 gulp.task('js', [], function() {
