@@ -6,16 +6,19 @@
 
 tasks:
 
-    # Process Main APP LESS files
+    # Process Main APP LESS files (files you edit frequently)
     less_main:
+        # Array of LESS Tasks. Create a new array for each CSS file you would like to create.
         -
             # Name of the individual task - used for notifications
             name: "Main CSS"
-            # Source files - Can be a single file or array. Each file will be processed and saved individually.
+            # Source files - Can be a single file or array. Files will be concatenated and processed as a single file.
             src:
                 - "../assets/less/main.less"
             # Destination path - define where the resulting CSS files should be saved
-            dest: "../public/css"
+            destFolder: "./public/css"
+            # Destination filename - define what the resulting CSS files should be called
+            dest: "main.css"
             # Each task can optionally contain custom options for the plugins used
             # Post CSS plugins can be be decalared along with options. Note, if you declare plugins here, they will overide ALL plugins set in gulp.config.yaml
             # Also remember to install the Post-CSS plugins via NPM before using them!
@@ -27,16 +30,20 @@ tasks:
                     #cascade: true
             -
                 name: 'cssnano'
-
+       
+    # Process Plugins & Third party LESS (files you edit rarely)
     less_plugins:
+        # Array of LESS Tasks. Create a new array for each CSS file you would like to create.
         -
             # Name of the individual task - used for notifications
             name: "Plugin CSS"
-            # Source files - Can be a single file or array. Each file will be processed and saved individually.
+            # Source files - Can be a single file or array. Files will be concatenated and processed as a single file.
             src:
                 - "../assets/less/plugins.less"
             # Destination path - define where the resulting CSS files should be saved
-            dest: "../public/css"
+            destFolder: "./public/css"
+            # Destination filename - define what the resulting CSS files should be called
+            dest: "plugins.css"
             # Each task can optionally contain custom options for the plugins used
             # Post CSS plugins can be be decalared along with options. Note, if you declare plugins here, they will overide ALL plugins set in gulp.config.yaml
             # Also remember to install the Post-CSS plugins via NPM before using them!
@@ -56,11 +63,11 @@ tasks:
             # Source files - Can be a single file or array. Multiple files will be concatenated.
             src:
                 - "../assets/js/helpers.js"
-                - "../assets/js/main.js"
+                - "../assets/js/base.js"
             # Destination path - define where the resulting JS files should be saved
             destFolder: "../public/js"
             # Destination filename - define the filename of the resulting JS file
-            dest: "main.js"
+            dest: "base.js"
             # Each task can optionally contain custom options for the plugins used. If none are used it will default to values in config.yaml.
             #uglify:
                 #mangle: false

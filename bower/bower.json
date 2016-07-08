@@ -1,6 +1,6 @@
 {
 	"name": "fff-bower",
-	"version": "0.5.1",
+	"version": "0.6.0",
 	"authors": [
 		"Dan Powell <me@dan-powell.uk>"
 	],
@@ -14,11 +14,11 @@
 		"tests"
 	],
 	"dependencies": {
-		"bootstrap": "~3.2.0",
-		"modernizr": "~2.8.3",
-		"respondJS": "~1.4.2",
+		"bootstrap": "3.*",
+		"modernizr": "3.*",
+		"respondJS": "1.4.*",
 		"jquery-legacy": "jquery#^1",
-		"jquery": "~2.1.1",
-		"fontawesome": "~4.2.0"
+		"jquery": "2.*",
+		"fontawesome": "4.*"
 	}
 }
