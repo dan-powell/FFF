@@ -8,6 +8,8 @@ postCssPlugins:
             #cascade: true
     -
         name: 'cssnano'
+        options:
+            zindex: false
 
 uglify:
     mangle: false
