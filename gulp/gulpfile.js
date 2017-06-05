@@ -51,7 +51,8 @@ var gulp		= require('gulp'),
 	concat      = require('gulp-concat'),
 	gulpif 		= require('gulp-if'),
     reveasy     = require("gulp-rev-easy"),
-    postcss     = require('gulp-postcss');
+    postcss     = require('gulp-postcss'),
+	sourcemaps 	= require('gulp-sourcemaps');
 
 
 // Get get post CSS plugins
@@ -77,18 +78,13 @@ if(typeof config.postCssPlugins != 'undefined' && config.postCssPlugins != null)
 
 // Load local development plugins
 if (env.developmentMode) {
-	var sourcemaps 	= require('gulp-sourcemaps'),
-		filter       	= require('gulp-filter'),
+	var filter       	= require('gulp-filter'),
 		notify      	= require('gulp-notify'),
 		browserSync 	= require('browser-sync')
 } else {
 	// TODO - This is a hacky way of dealing with missing dev dependancies
 	var notify = function() {return true};
 	notify.onError = function() {return true};
-	var sourcemaps = {
-		init : function() {return true},
-		write : function() {return true}
-	},
 	filter = function() {return true};
 	var browserSync = function() {return true};
 	browserSync.reload = function() {return true};
@@ -124,12 +120,12 @@ gulp.task('less-main', function() {
             }
 
             gulp.src(task.src)
+				.pipe(gulpif(env.css.sourceMaps, sourcemaps.init() ))
                 .pipe(concat(task.dest))
                 .pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
                 .pipe(less())
                 .pipe(postcss(postCssPluginsTask))
-                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
+                .pipe(gulpif(env.css.sourceMaps, sourcemaps.write('.') ))
                 .pipe(gulp.dest(task.destFolder))
                 .pipe(gulpif(env.developmentMode, filter('**/*.css') ))
                 .pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
@@ -158,12 +154,12 @@ gulp.task('less-plugins', function() {
             }
 
             gulp.src(task.src)
+				.pipe(gulpif(env.css.sourceMaps, sourcemaps.init() ))
                 .pipe(concat(task.dest))
                 .pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.init()) ))
                 .pipe(less())
                 .pipe(postcss(postCssPluginsTask))
-                .pipe(gulpif(env.developmentMode, gulpif(env.css.sourceMaps, sourcemaps.write('.')) ))
+                .pipe(gulpif(env.css.sourceMaps, sourcemaps.write('.') ))
                 .pipe(gulp.dest(task.destFolder))
                 .pipe(gulpif(env.developmentMode, filter('**/*.css') ))
                 .pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
@@ -196,11 +192,11 @@ gulp.task('js-main', function() {
             }
 
 			gulp.src(task.src)
+				.pipe(gulpif(env.js.sourceMaps, sourcemaps.init() ))
 				.pipe(concat(task.dest))
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
 				.pipe(uglify(uglifyConfig))
-				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulpif(env.js.sourceMaps, sourcemaps.write('.') ))
 				.pipe(gulp.dest(task.destFolder))
 				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
 				.pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))
@@ -227,11 +223,11 @@ gulp.task('js-plugins', function() {
             }
 
 			gulp.src(task.src)
+				.pipe(gulpif(env.js.sourceMaps, sourcemaps.init() ))
 				.pipe(concat(task.dest))
 				.pipe(gulpif(env.developmentMode, plumber({errorHandler: notify.onError(task.name + " Error: <%= error.message %> | Line: <%= error.lineNumber %> | fileName: <%= error.fileName %> | Extract: <%= error.extract %>")}) ))
-				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.init()) ))
 				.pipe(uglify(uglifyConfig))
-				.pipe(gulpif(env.developmentMode, gulpif(env.js.sourceMaps, sourcemaps.write('.')) ))
+				.pipe(gulpif(env.js.sourceMaps, sourcemaps.write('.') ))
 				.pipe(gulp.dest(task.destFolder))
 				.pipe(gulpif(env.developmentMode, filter('**/*.js') ))
 				.pipe(gulpif(env.developmentMode, notify({ message: task.name + ' Successful' }) ))

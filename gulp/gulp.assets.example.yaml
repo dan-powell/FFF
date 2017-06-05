@@ -16,7 +16,7 @@ tasks:
             src:
                 - "../assets/less/main.less"
             # Destination path - define where the resulting CSS files should be saved
-            destFolder: "./public/css"
+            destFolder: "../public/css"
             # Destination filename - define what the resulting CSS files should be called
             dest: "main.css"
             # Each task can optionally contain custom options for the plugins used
@@ -30,7 +30,7 @@ tasks:
                     #cascade: true
             -
                 name: 'cssnano'
-       
+
     # Process Plugins & Third party LESS (files you edit rarely)
     less_plugins:
         # Array of LESS Tasks. Create a new array for each CSS file you would like to create.
@@ -41,7 +41,7 @@ tasks:
             src:
                 - "../assets/less/plugins.less"
             # Destination path - define where the resulting CSS files should be saved
-            destFolder: "./public/css"
+            destFolder: "../public/css"
             # Destination filename - define what the resulting CSS files should be called
             dest: "plugins.css"
             # Each task can optionally contain custom options for the plugins used
