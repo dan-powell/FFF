@@ -29,15 +29,6 @@ try {
     process.exit()
 }
 
-// Load plugin config
-try {
-    var config = jsyaml.load(fs.readFileSync('./gulp.config.yaml', 'utf8'));
-} catch(err) {
-	console.log('There is an error in the CONFIG file.');
-	console.log(err);
-	process.exit()
-}
-
 if(assets == null || typeof assets.tasks == 'undefined' || assets.tasks == null) {
 	console.log('No tasks defined. Please add some to the assets file.');
 	process.exit()
@@ -70,8 +61,8 @@ var getPostCssPlugins = function(plugins) {
 };
 
 // Load Post-CSS Plugins
-if(typeof config.postCssPlugins != 'undefined' && config.postCssPlugins != null) {
-    var postCssPlugins = getPostCssPlugins(config.postCssPlugins);
+if(typeof assets.config.postCssPlugins != 'undefined' && assets.config.postCssPlugins != null) {
+    var postCssPlugins = getPostCssPlugins(assets.config.postCssPlugins);
 } else {
     var postCssPlugins = [];
 }
@@ -186,7 +177,7 @@ gulp.task('js-main', function() {
 
     		// Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		var uglifyConfig = config.uglify;
+        		var uglifyConfig = assets.config.uglify;
     		} else {
                 var uglifyConfig = task.uglify;
             }
@@ -217,7 +208,7 @@ gulp.task('js-plugins', function() {
 
     		// Check if a config is set, use some sensible defaults if not
     		if(typeof task.uglify == 'undefined') {
-        		var uglifyConfig = config.uglify;
+        		var uglifyConfig = assets.config.uglify;
     		} else {
                 var uglifyConfig = task.uglify;
             }
@@ -313,7 +304,7 @@ gulp.task('rev', function () {
         assets.tasks.cachebust.forEach(function(task) {
             // Check if a config is set, use some sensible defaults if not
             if(typeof task.revEasy == 'undefined') {
-        		task.revEasy = config.revEasy;
+        		task.revEasy = assets.config.revEasy;
     		}
 
             gulp.src(task.src)
